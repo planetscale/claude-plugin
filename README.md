@@ -24,7 +24,3 @@ If you are developing this plugin locally:
 ```bash
 claude --plugin-dir .
 ```
-
-## Coming soon
-
-Once this plugin is listed in the Claude Directory, installation will be available through the built-in plugin flow.
