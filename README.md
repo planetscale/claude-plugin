@@ -11,17 +11,11 @@ In Claude Code, add this GitHub repository as a marketplace, then install the pl
 /plugin install planetscale@planetscale-plugins
 ```
 
-No manual cloning is required.
-
 ### Verify it loaded
 
-In Claude Code, run:
+In Claude Code, run `/mcp` to see the `planetscale` MCP server.
 
-```text
-/mcp
-```
-
-You should see the `planetscale` MCP server available.
+If it does not appear immediately after install, fully restart Claude Code and check `/mcp` again. Plugin-provided MCP server changes are applied on restart.
 
 ### Alternative (development only)
 
