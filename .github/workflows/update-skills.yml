@@ -1,0 +1,74 @@
+name: Update Database Skills Submodule
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 9 * * 1"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-skills:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Capture current submodule commit
+        id: before
+        run: |
+          echo "sha=$(git rev-parse HEAD:database-skills)" >> "$GITHUB_OUTPUT"
+
+      - name: Sync and update database-skills submodule
+        run: |
+          git submodule sync --recursive
+          git submodule update --init --remote database-skills
+
+      - name: Validate expected skills layout
+        run: |
+          test -d database-skills/skills
+          for skill in mysql neki postgres vitess; do
+            test -f "database-skills/skills/$skill/SKILL.md"
+          done
+
+      - name: Capture updated submodule commit
+        id: after
+        run: |
+          echo "sha=$(git -C database-skills rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Compute change metadata
+        id: meta
+        run: |
+          BEFORE_SHA="${{ steps.before.outputs.sha }}"
+          AFTER_SHA="${{ steps.after.outputs.sha }}"
+          CHANGED="false"
+          if [ "$BEFORE_SHA" != "$AFTER_SHA" ]; then
+            CHANGED="true"
+          fi
+          COMPARE_URL="https://github.com/planetscale/database-skills/compare/$BEFORE_SHA...$AFTER_SHA"
+          echo "changed=$CHANGED" >> "$GITHUB_OUTPUT"
+          echo "before_sha=$BEFORE_SHA" >> "$GITHUB_OUTPUT"
+          echo "after_sha=$AFTER_SHA" >> "$GITHUB_OUTPUT"
+          echo "compare_url=$COMPARE_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Open pull request with submodule update
+        if: steps.meta.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: chore/update-database-skills-submodule
+          delete-branch: true
+          title: "chore: update database-skills submodule"
+          commit-message: "chore: update database-skills submodule"
+          body: |
+            This automated PR updates the `database-skills` submodule to the latest `main` commit.
+
+            - Previous commit: `${{ steps.meta.outputs.before_sha }}`
+            - Updated commit: `${{ steps.meta.outputs.after_sha }}`
+            - Upstream compare: ${{ steps.meta.outputs.compare_url }}
+          add-paths: |
+            .gitmodules
+            database-skills
