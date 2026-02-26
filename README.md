@@ -8,7 +8,7 @@ In Claude Code, add this GitHub repository as a marketplace, then install the pl
 
 ```text
 /plugin marketplace add planetscale/claude-plugin
-/plugin install planetscale@planetscale-plugins
+/plugin install planetscale@planetscale
 ```
 
 ### Verify it loaded
