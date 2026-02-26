@@ -50,6 +50,17 @@ git submodule update --init --remote database-skills
 
 Commit the resulting submodule pointer change in this repository.
 
+### Local testing
+
+To test this plugin from your local working copy (before branching/PR):
+
+```bash
+claude --plugin-dir .
+```
+
+1. Run `/mcp` to verify the `planetscale` MCP server is loaded (will require authentication).
+2. Run `/skills` to verify the `planetscale` skills are loaded.
+
 ### Automated weekly updates
 
 GitHub Actions runs `.github/workflows/update-skills.yml` weekly and also supports manual runs (`workflow_dispatch`).
@@ -61,7 +72,7 @@ When `database-skills` has new commits, the workflow opens or updates a PR that 
 
 ### Alternative (development only)
 
-If you are developing this plugin locally:
+You can also use this direct local plugin load command:
 
 ```bash
 claude --plugin-dir .
