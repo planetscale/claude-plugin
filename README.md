@@ -1,6 +1,6 @@
 # PlanetScale Claude Plugin
 
-PlanetScale plugin for installing the MCP server into Claude Code and Claude Cowork.
+Plugin for installing the [PlanetScale MCP server](https://planetscale.com/docs/connect/mcp) and [Database Skills](https://db-skills.com/) into Claude Code.
 
 ## Install from GitHub
 
