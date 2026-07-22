@@ -1,6 +1,13 @@
-# PlanetScale Claude Plugin
+# PlanetScale Claude Code Plugin
 
-Plugin for installing the [PlanetScale MCP server](https://planetscale.com/docs/connect/mcp) and [Database Skills](https://db-skills.com/) into Claude Code.
+Install the hosted [PlanetScale MCP server](https://planetscale.com/docs/connect/mcp), [Database Skills](https://db-skills.com/), and PlanetScale operational skills in Claude Code from one plugin.
+
+The MCP server provides authenticated access to PlanetScale organizations, databases, branches, schema, and Insights data. The two skill packs add database guidance and PlanetScale-specific operating workflows.
+
+## Prerequisites
+
+- Claude Code with plugin support
+- A PlanetScale account for authenticated MCP features
 
 ## Install from GitHub
 
@@ -13,24 +20,22 @@ In Claude Code, add this GitHub repository as a marketplace, then install the pl
 
 ### Verify it loaded
 
-In Claude Code, run `/mcp` to see the `planetscale` MCP server.
+Run `/mcp` to confirm the `planetscale` MCP server is available, then run `/skills` to confirm skills from both `database-skills/skills` and `skills` are loaded. Restart Claude Code if a newly installed MCP server does not appear immediately.
 
-If it does not appear immediately after install, fully restart Claude Code and check `/mcp` again. Plugin-provided MCP server changes are applied on restart.
+## Skills source and sync
 
-## Skills Source and Sync
+This plugin tracks two upstream PlanetScale repositories as Git submodules:
 
-This plugin pulls in skills from the upstream `planetscale/database-skills` repository via the `database-skills` Git submodule.
-
-- Source repo: `https://github.com/planetscale/database-skills`
-- Submodule path: `database-skills`
-- Tracked branch: `main`
+| Source | Submodule path | Skills path | Branch |
+| --- | --- | --- | --- |
+| [`planetscale/database-skills`](https://github.com/planetscale/database-skills) | `database-skills` | `database-skills/skills` | `main` |
+| [`planetscale/skills`](https://github.com/planetscale/skills) | `skills` | `skills` | `main` |
 
 ### Local bootstrap
 
-Clone with submodules:
-
 ```bash
-git clone --recurse-submodules https://github.com/planetscale/claude-code-plugin.git
+git clone --recurse-submodules https://github.com/planetscale/claude-plugin.git
+cd claude-plugin
 ```
 
 If you already cloned without submodules:
@@ -41,39 +46,31 @@ git submodule update --init --recursive
 
 ### Manual one-off update
 
-To pull the latest upstream skills into this repository:
-
 ```bash
 git submodule sync --recursive
-git submodule update --init --remote database-skills
+git submodule update --init --remote database-skills skills
 ```
 
-Commit the resulting submodule pointer change in this repository.
+Commit the resulting submodule pointer changes in this repository.
 
 ### Local testing
 
-To test this plugin from your local working copy (before branching/PR):
+Load the plugin from the working copy:
 
 ```bash
 claude --plugin-dir .
 ```
 
-1. Run `/mcp` to verify the `planetscale` MCP server is loaded (will require authentication).
-2. Run `/skills` to verify the `planetscale` skills are loaded.
+Run `/mcp` and `/skills` to verify the MCP server and both skill packs.
 
 ### Automated weekly updates
 
-GitHub Actions runs `.github/workflows/update-skills.yml` weekly and also supports manual runs (`workflow_dispatch`).
+GitHub Actions runs `.github/workflows/update-skills.yml` weekly and also supports manual runs (`workflow_dispatch`). When either upstream repository changes, the workflow opens or updates a focused pull request containing the changed submodule pointers.
 
-When `database-skills` has new commits, the workflow opens or updates a PR that contains only:
+## Contributing
 
-- The `database-skills` submodule pointer update
-- `.gitmodules` (if submodule metadata changed)
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and pull request guidance. Submit changes to skill content in its upstream repository rather than editing a submodule here.
 
-### Alternative (development only)
+## License
 
-You can also use this direct local plugin load command:
-
-```bash
-claude --plugin-dir .
-```
+The plugin wrapper and configuration are licensed under the [Apache License 2.0](LICENSE). The included skill repositories retain their MIT licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
