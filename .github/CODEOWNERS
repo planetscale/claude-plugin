@@ -1,8 +1,1 @@
 * @planetscale/marketing
-
-/.github/workflows/ @planetscale/platform
-/.claude-plugin/ @planetscale/platform
-/.mcp.json @planetscale/platform
-/.gitmodules @planetscale/platform
-/database-skills @planetscale/platform
-/skills @planetscale/platform
