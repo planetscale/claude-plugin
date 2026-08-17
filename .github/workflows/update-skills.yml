@@ -20,7 +20,7 @@ jobs:
         id: before
         run: |
           echo "database_skills_sha=$(jq -r '."database-skills".sha' .skills-versions.json)" >> "$GITHUB_OUTPUT"
-          echo "skills_sha=$(jq -r '.skills.sha' .skills-versions.json)" >> "$GITHUB_OUTPUT"
+          echo "skills_sha=$(jq -r '."planetscale-skills".sha' .skills-versions.json)" >> "$GITHUB_OUTPUT"
 
       - name: Sync vendored skills from upstream
         run: |
@@ -32,7 +32,7 @@ jobs:
           for skill in mysql neki postgres vitess; do
             test -f "database-skills/skills/$skill/SKILL.md"
           done
-          test -d skills
+          test -d planetscale-skills
           for skill in \
             00-safe-orchestrator \
             01-readonly-inventory \
@@ -49,14 +49,14 @@ jobs:
             12-best-practices-matrix \
             13-autonomous-execution-mode \
             14-pscale-cli-automation; do
-            test -f "skills/$skill/SKILL.md"
+            test -f "planetscale-skills/$skill/SKILL.md"
           done
 
       - name: Capture updated synced SHAs
         id: after
         run: |
           echo "database_skills_sha=$(jq -r '."database-skills".sha' .skills-versions.json)" >> "$GITHUB_OUTPUT"
-          echo "skills_sha=$(jq -r '.skills.sha' .skills-versions.json)" >> "$GITHUB_OUTPUT"
+          echo "skills_sha=$(jq -r '."planetscale-skills".sha' .skills-versions.json)" >> "$GITHUB_OUTPUT"
 
       - name: Compute change metadata
         id: meta
@@ -70,7 +70,7 @@ jobs:
             CHANGED="true"
           fi
           # Also treat content-only drift as changed (SHA file already updated by sync script)
-          if ! git diff --quiet -- database-skills skills .skills-versions.json; then
+          if ! git diff --quiet -- database-skills planetscale-skills .skills-versions.json; then
             CHANGED="true"
           fi
           DATABASE_SKILLS_COMPARE_URL="https://github.com/planetscale/database-skills/compare/$DATABASE_SKILLS_BEFORE_SHA...$DATABASE_SKILLS_AFTER_SHA"
@@ -99,11 +99,11 @@ jobs:
             - Updated commit: `${{ steps.meta.outputs.database_skills_after_sha }}`
             - Upstream compare: ${{ steps.meta.outputs.database_skills_compare_url }}
 
-            `skills`:
+            `planetscale-skills` (from `planetscale/skills`):
             - Previous commit: `${{ steps.meta.outputs.skills_before_sha }}`
             - Updated commit: `${{ steps.meta.outputs.skills_after_sha }}`
             - Upstream compare: ${{ steps.meta.outputs.skills_compare_url }}
           add-paths: |
             .skills-versions.json
             database-skills
-            skills
+            planetscale-skills

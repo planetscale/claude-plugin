@@ -22,9 +22,9 @@ echo "Cloning database-skills (${DATABASE_SKILLS_REF})..."
 git clone --depth 1 --branch "$DATABASE_SKILLS_REF" "$DATABASE_SKILLS_REPO" "$TMP/database-skills"
 DATABASE_SKILLS_SHA="$(git -C "$TMP/database-skills" rev-parse HEAD)"
 
-echo "Cloning skills (${SKILLS_REF})..."
-git clone --depth 1 --branch "$SKILLS_REF" "$SKILLS_REPO" "$TMP/skills"
-SKILLS_SHA="$(git -C "$TMP/skills" rev-parse HEAD)"
+echo "Cloning planetscale/skills (${SKILLS_REF})..."
+git clone --depth 1 --branch "$SKILLS_REF" "$SKILLS_REPO" "$TMP/planetscale-skills"
+SKILLS_SHA="$(git -C "$TMP/planetscale-skills" rev-parse HEAD)"
 
 echo "Vendoring database-skills/skills @ ${DATABASE_SKILLS_SHA}..."
 rm -rf database-skills
@@ -33,10 +33,10 @@ cp -a "$TMP/database-skills/skills" database-skills/skills
 cp "$TMP/database-skills/LICENSE" database-skills/LICENSE
 cp "$TMP/database-skills/README.md" database-skills/README.md
 
-echo "Vendoring skills @ ${SKILLS_SHA}..."
-rm -rf skills
-mkdir -p skills
-tar -C "$TMP/skills" --exclude='.git' -cf - . | tar -C skills -xf -
+echo "Vendoring planetscale-skills @ ${SKILLS_SHA}..."
+rm -rf planetscale-skills
+mkdir -p planetscale-skills
+tar -C "$TMP/planetscale-skills" --exclude='.git' -cf - . | tar -C planetscale-skills -xf -
 
 cat > .skills-versions.json <<EOF
 {
@@ -45,7 +45,7 @@ cat > .skills-versions.json <<EOF
     "ref": "${DATABASE_SKILLS_REF}",
     "sha": "${DATABASE_SKILLS_SHA}"
   },
-  "skills": {
+  "planetscale-skills": {
     "repository": "https://github.com/planetscale/skills",
     "ref": "${SKILLS_REF}",
     "sha": "${SKILLS_SHA}"
@@ -54,5 +54,5 @@ cat > .skills-versions.json <<EOF
 EOF
 
 echo "Synced:"
-echo "  database-skills -> ${DATABASE_SKILLS_SHA}"
-echo "  skills          -> ${SKILLS_SHA}"
+echo "  database-skills     -> ${DATABASE_SKILLS_SHA}"
+echo "  planetscale-skills  -> ${SKILLS_SHA}"

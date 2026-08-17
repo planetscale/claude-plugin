@@ -27,7 +27,7 @@ If it does not appear immediately after install, fully restart Claude Code and c
 Skills are **vendored** into this repository so Claude plugin installs work on a plain checkout (no `git submodule update --init`). Upstream remains the source of truth:
 
 - [`planetscale/database-skills`](https://github.com/planetscale/database-skills) → `database-skills/skills` (plus LICENSE/README)
-- [`planetscale/skills`](https://github.com/planetscale/skills) → `skills`
+- [`planetscale/skills`](https://github.com/planetscale/skills) → `planetscale-skills`
 
 Pinned upstream SHAs are recorded in [`.skills-versions.json`](.skills-versions.json).
 
@@ -58,7 +58,7 @@ GitHub Actions runs `.github/workflows/update-skills.yml` weekly and also suppor
 
 When upstream `main` has new commits, the workflow opens or updates a PR that contains:
 
-- Updated vendored files under `database-skills/` and/or `skills/`
+- Updated vendored files under `database-skills/` and/or `planetscale-skills/`
 - Updated `.skills-versions.json`
 
 ### Alternative (development only)

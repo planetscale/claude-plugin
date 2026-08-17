@@ -10,7 +10,7 @@ Clone the repository normally. Skills are vendored in-tree, so no submodule init
 
 Submit PlanetScale operating skill changes to [`planetscale/skills`](https://github.com/planetscale/skills) and database skill changes to [`planetscale/database-skills`](https://github.com/planetscale/database-skills).
 
-Do not edit the vendored copies under `database-skills/` or `skills/` directly in this repository except via sync:
+Do not edit the vendored copies under `database-skills/` or `planetscale-skills/` directly in this repository except via sync:
 
 ```bash
 bash scripts/sync-skills.sh
