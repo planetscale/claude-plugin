@@ -1,4 +1,4 @@
-name: Update Skills Submodules
+name: Update Vendored Skills
 
 on:
   workflow_dispatch:
@@ -15,19 +15,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          submodules: recursive
 
-      - name: Capture current submodule commits
+      - name: Capture current synced SHAs
         id: before
         run: |
-          echo "database_skills_sha=$(git rev-parse HEAD:database-skills)" >> "$GITHUB_OUTPUT"
-          echo "skills_sha=$(git rev-parse HEAD:skills)" >> "$GITHUB_OUTPUT"
+          echo "database_skills_sha=$(jq -r '."database-skills".sha' .skills-versions.json)" >> "$GITHUB_OUTPUT"
+          echo "skills_sha=$(jq -r '."planetscale-skills".sha' .skills-versions.json)" >> "$GITHUB_OUTPUT"
 
-      - name: Sync and update skills submodules
+      - name: Sync vendored skills from upstream
         run: |
-          git submodule sync --recursive
-          git submodule update --init --remote database-skills skills
+          bash scripts/sync-skills.sh
 
       - name: Validate expected skills layout
         run: |
@@ -35,7 +32,7 @@ jobs:
           for skill in mysql neki postgres vitess; do
             test -f "database-skills/skills/$skill/SKILL.md"
           done
-          test -d skills
+          test -d planetscale-skills
           for skill in \
             00-safe-orchestrator \
             01-readonly-inventory \
@@ -50,15 +47,16 @@ jobs:
             10-customer-report-template \
             11-change-gates-and-approval-contract \
             12-best-practices-matrix \
-            13-autonomous-execution-mode; do
-            test -f "skills/$skill/SKILL.md"
+            13-autonomous-execution-mode \
+            14-pscale-cli-automation; do
+            test -f "planetscale-skills/$skill/SKILL.md"
           done
 
-      - name: Capture updated submodule commits
+      - name: Capture updated synced SHAs
         id: after
         run: |
-          echo "database_skills_sha=$(git -C database-skills rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-          echo "skills_sha=$(git -C skills rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "database_skills_sha=$(jq -r '."database-skills".sha' .skills-versions.json)" >> "$GITHUB_OUTPUT"
+          echo "skills_sha=$(jq -r '."planetscale-skills".sha' .skills-versions.json)" >> "$GITHUB_OUTPUT"
 
       - name: Compute change metadata
         id: meta
@@ -71,6 +69,10 @@ jobs:
           if [ "$DATABASE_SKILLS_BEFORE_SHA" != "$DATABASE_SKILLS_AFTER_SHA" ] || [ "$SKILLS_BEFORE_SHA" != "$SKILLS_AFTER_SHA" ]; then
             CHANGED="true"
           fi
+          # Also treat content-only drift as changed (SHA file already updated by sync script)
+          if ! git diff --quiet -- database-skills planetscale-skills .skills-versions.json; then
+            CHANGED="true"
+          fi
           DATABASE_SKILLS_COMPARE_URL="https://github.com/planetscale/database-skills/compare/$DATABASE_SKILLS_BEFORE_SHA...$DATABASE_SKILLS_AFTER_SHA"
           SKILLS_COMPARE_URL="https://github.com/planetscale/skills/compare/$SKILLS_BEFORE_SHA...$SKILLS_AFTER_SHA"
           echo "changed=$CHANGED" >> "$GITHUB_OUTPUT"
@@ -81,27 +83,27 @@ jobs:
           echo "skills_after_sha=$SKILLS_AFTER_SHA" >> "$GITHUB_OUTPUT"
           echo "skills_compare_url=$SKILLS_COMPARE_URL" >> "$GITHUB_OUTPUT"
 
-      - name: Open pull request with submodule updates
+      - name: Open pull request with vendored skill updates
         if: steps.meta.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           branch: chore/update-skills-submodules
           delete-branch: true
-          title: "chore: update skills submodules"
-          commit-message: "chore: update skills submodules"
+          title: "chore: update vendored skills"
+          commit-message: "chore: update vendored skills"
           body: |
-            This automated PR updates the skills submodules to the latest `main` commits.
+            This automated PR syncs vendored skills from upstream `main`.
 
             `database-skills`:
             - Previous commit: `${{ steps.meta.outputs.database_skills_before_sha }}`
             - Updated commit: `${{ steps.meta.outputs.database_skills_after_sha }}`
             - Upstream compare: ${{ steps.meta.outputs.database_skills_compare_url }}
 
-            `skills`:
+            `planetscale-skills` (from `planetscale/skills`):
             - Previous commit: `${{ steps.meta.outputs.skills_before_sha }}`
             - Updated commit: `${{ steps.meta.outputs.skills_after_sha }}`
             - Upstream compare: ${{ steps.meta.outputs.skills_compare_url }}
           add-paths: |
-            .gitmodules
+            .skills-versions.json
             database-skills
-            skills
+            planetscale-skills

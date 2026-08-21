@@ -1,0 +1,12 @@
+{
+  "database-skills": {
+    "repository": "https://github.com/planetscale/database-skills",
+    "ref": "main",
+    "sha": "af0ce0cfb65cca4cc21d18ca0d9cf270ca99d488"
+  },
+  "planetscale-skills": {
+    "repository": "https://github.com/planetscale/skills",
+    "ref": "main",
+    "sha": "9e2a401da06ea61b9990e6cda37fdf2632cc977c"
+  }
+}

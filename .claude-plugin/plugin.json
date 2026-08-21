@@ -5,7 +5,7 @@
   "mcpServers": "./.mcp.json",
   "skills": [
     "./database-skills/skills",
-    "./skills"
+    "./planetscale-skills"
   ],
   "author": {
     "name": "PlanetScale"

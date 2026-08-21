@@ -4,15 +4,19 @@ Thanks for contributing to the PlanetScale plugin.
 
 ## Setup
 
-Clone the repository with Git submodules, or initialize them in an existing checkout:
-
-```bash
-git submodule update --init --recursive
-```
+Clone the repository normally. Skills are vendored in-tree, so no submodule init is required.
 
 ## Skill changes
 
-Submit PlanetScale operating skill changes to [`planetscale/skills`](https://github.com/planetscale/skills) and database skill changes to [`planetscale/database-skills`](https://github.com/planetscale/database-skills). This repository should only update the corresponding submodule references.
+Submit PlanetScale operating skill changes to [`planetscale/skills`](https://github.com/planetscale/skills) and database skill changes to [`planetscale/database-skills`](https://github.com/planetscale/database-skills).
+
+Do not edit the vendored copies under `database-skills/` or `planetscale-skills/` directly in this repository except via sync:
+
+```bash
+bash scripts/sync-skills.sh
+```
+
+That updates the vendored trees and [`.skills-versions.json`](.skills-versions.json). Weekly automation also opens PRs when upstream `main` moves.
 
 ## Pull requests
 

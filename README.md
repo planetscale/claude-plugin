@@ -24,42 +24,22 @@ If it does not appear immediately after install, fully restart Claude Code and c
 
 ## Skills Source and Sync
 
-This plugin pulls in skills from the upstream `planetscale/database-skills` repository via the `database-skills` Git submodule.
+Skills are **vendored** into this repository so Claude plugin installs work on a plain checkout (no `git submodule update --init`). Upstream remains the source of truth:
 
-- Source repo: `https://github.com/planetscale/database-skills`
-- Submodule path: `database-skills`
-- Tracked branch: `main`
+- [`planetscale/database-skills`](https://github.com/planetscale/database-skills) → `database-skills/skills` (plus LICENSE/README)
+- [`planetscale/skills`](https://github.com/planetscale/skills) → `planetscale-skills`
 
-This plugin also pulls in skills from the upstream `planetscale/skills` repository via the `skills` Git submodule.
-
-- Source repo: `https://github.com/planetscale/skills`
-- Submodule path: `skills`
-- Tracked branch: `main`
-
-### Local bootstrap
-
-Clone with submodules:
-
-```bash
-git clone --recurse-submodules https://github.com/planetscale/claude-code-plugin.git
-```
-
-If you already cloned without submodules:
-
-```bash
-git submodule update --init --recursive
-```
+Pinned upstream SHAs are recorded in [`.skills-versions.json`](.skills-versions.json).
 
 ### Manual one-off update
 
 To pull the latest upstream skills into this repository:
 
 ```bash
-git submodule sync --recursive
-git submodule update --init --remote database-skills skills
+bash scripts/sync-skills.sh
 ```
 
-Commit the resulting submodule pointer changes in this repository.
+Commit the resulting content and `.skills-versions.json` changes.
 
 ### Local testing
 
@@ -76,10 +56,10 @@ claude --plugin-dir .
 
 GitHub Actions runs `.github/workflows/update-skills.yml` weekly and also supports manual runs (`workflow_dispatch`).
 
-When either submodule has new commits, the workflow opens or updates a PR that contains only:
+When upstream `main` has new commits, the workflow opens or updates a PR that contains:
 
-- The `database-skills` and/or `skills` submodule pointer updates
-- `.gitmodules` (if submodule metadata changed)
+- Updated vendored files under `database-skills/` and/or `planetscale-skills/`
+- Updated `.skills-versions.json`
 
 ### Alternative (development only)
 
