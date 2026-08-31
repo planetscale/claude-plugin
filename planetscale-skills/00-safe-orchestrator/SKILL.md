@@ -1,7 +1,6 @@
 ---
 name: planetscale-safe-orchestrator
 description: Master skill that runs the full PlanetScale safe best-practices assessment — inventory, engine review, Insights, Traffic Control, webhooks, schema recommendations, codebase instrumentation, and agent operating model — then produces a unified recommendations report. Never applies changes without explicit approval. Use when the user asks to run the full assessment, all skills, or PlanetScale best-practices review.
-disable-model-invocation: true
 ---
 
 # PlanetScale safe orchestrator (master skill)
@@ -20,7 +19,7 @@ Class C/D/E mutations require approval per `../11-change-gates-and-approval-cont
 
 One exception exists: if the operator explicitly acknowledges the risk and names a scope per `../13-autonomous-execution-mode/SKILL.md`, execution proceeds autonomously under that skill's status and halt discipline instead of stopping for per-change approval. The assessment phases below are identical either way.
 
-Sub-skills are sibling folders next to this skill (for example `../01-readonly-inventory/SKILL.md`). Some installers rename skill folders to their frontmatter `name` (for example `planetscale-readonly-inventory` instead of `01-readonly-inventory`); if a referenced numbered path does not exist, locate the sibling skill whose frontmatter `name` matches and use it instead.
+Sub-skills are sibling folders next to this skill, referenced by relative path; if a referenced path does not exist, locate the sibling skill whose frontmatter `name` matches and use it instead.
 
 Ground all CLI and API usage in the official documentation rather than guessing: the docs index is at https://planetscale.com/docs/llms.txt (append `.md` to any docs URL for the markdown version) and the API reference is https://planetscale.com/docs/openapi.yaml. When a command or endpoint fails, check the docs for the correct form before recording an evidence gap. Tooling and access failures belong in the internal run log, never in the customer report.
 
